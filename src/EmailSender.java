@@ -43,13 +43,15 @@ public class EmailSender {
 
 //        String msg = "This is my fourth email using JavaMailer";
 
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+        message.setText(msg);
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-
-        message.setContent(multipart);
+//        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+//        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+//
+//        Multipart multipart = new MimeMultipart();
+//        multipart.addBodyPart(mimeBodyPart);
+//
+//        message.setContent(multipart);
 
         Transport.send(message);
     }

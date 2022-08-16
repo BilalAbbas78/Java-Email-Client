@@ -78,7 +78,7 @@ public class EmailReceiver {
                         .getRecipients(RecipientType.CC));
                 String sentDate = msg.getSentDate().toString();
 
-//                String contentType = msg.getContentType();
+                String contentType = msg.getContentType();
                 String messageContent = "";
 
 //                if (contentType.contains("text/plain")
@@ -87,6 +87,7 @@ public class EmailReceiver {
                     Object content = msg.getContent();
                     if (content != null) {
                         messageContent = content.toString();
+                        inbox.add(new MyInbox(from, toList, subject, messageContent));
                     }
                 } catch (Exception ex) {
                     messageContent = "[Error downloading content]";
@@ -94,7 +95,6 @@ public class EmailReceiver {
                 }
 //                }
 
-                inbox.add(new MyInbox(from, toList, subject, messageContent));
 
                 // print out details of each message
 //                System.out.println("Message #" + (i + 1) + ":");
