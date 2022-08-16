@@ -6,11 +6,16 @@ public class EmailSender {
     static Properties prop = new Properties();
     static Session session;
 
-    public static void main(String[] args) throws MessagingException {
+    EmailSender() throws MessagingException {
         setProperties();
-        createSession("account1@bilal.com", "123");
-        sendMessage("account1@bilal.com", "account2@bilal.com");
+        createSession(FrmMain.username, FrmMain.password);
+        sendMessage(FrmMain.username, FrmComposeMail.to, FrmComposeMail.message, FrmComposeMail.subject);
     }
+
+//    public static void main(String[] args) throws MessagingException {
+//        createSession("account1@bilal.com", "123");
+//        sendMessage("account1@bilal.com", "account2@bilal.com");
+//    }
 
     public static void setProperties() {
         prop.put("mail.smtp.auth", true);
@@ -29,14 +34,14 @@ public class EmailSender {
         });
     }
 
-    public static void sendMessage(String sender, String receiver) throws MessagingException {
+    public static void sendMessage(String sender, String receiver, String msg, String subject) throws MessagingException {
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(sender));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(receiver));
-        message.setSubject("Mail Subject");
+        message.setSubject(subject);
 
-        String msg = "This is my fourth email using JavaMailer";
+//        String msg = "This is my fourth email using JavaMailer";
 
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
         mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
