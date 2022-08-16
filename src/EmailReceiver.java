@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Folder;
@@ -9,13 +10,20 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.swing.*;
 
-/**
- * This program demonstrates how to get e-mail messages from a POP3/IMAP server
- *
- * @author www.codejava.net
- *
- */
+class MyInbox {
+    String from, to, subject, message;
+    MyInbox(String from, String to, String subject, String message) {
+        this.from = from;
+        this.to = to;
+        this.subject = subject;
+        this.message = message;
+    }
+}
+
+
 public class EmailReceiver {
+
+    public static ArrayList<MyInbox> inbox = new ArrayList<>();
 
     private static Properties getServerProperties(String protocol, String host,
                                                   String port) {
@@ -59,9 +67,8 @@ public class EmailReceiver {
 
             // fetches new messages from server
             Message[] messages = folderInbox.getMessages();
-
-            for (int i = 0; i < messages.length; i++) {
-                Message msg = messages[i];
+            inbox.clear();
+            for (Message msg : messages) {
                 Address[] fromAddress = msg.getFrom();
                 String from = fromAddress[0].toString();
                 String subject = msg.getSubject();
@@ -87,14 +94,16 @@ public class EmailReceiver {
                 }
 //                }
 
+                inbox.add(new MyInbox(from, toList, subject, messageContent));
+
                 // print out details of each message
-                System.out.println("Message #" + (i + 1) + ":");
-                System.out.println("\t From: " + from);
-                System.out.println("\t To: " + toList);
-                System.out.println("\t CC: " + ccList);
-                System.out.println("\t Subject: " + subject);
-                System.out.println("\t Sent Date: " + sentDate);
-                System.out.println("\t Message: " + messageContent);
+//                System.out.println("Message #" + (i + 1) + ":");
+//                System.out.println("\t From: " + from);
+//                System.out.println("\t To: " + toList);
+//                System.out.println("\t CC: " + ccList);
+//                System.out.println("\t Subject: " + subject);
+//                System.out.println("\t Sent Date: " + sentDate);
+//                System.out.println("\t Message: " + messageContent);
             }
 
             // disconnect
@@ -146,8 +155,12 @@ public class EmailReceiver {
         String host = "localhost";
         String port = "143";
 
-        String userName = "account1@bilal.com";
-        String password = "123";
+//        String userName = "account1@bilal.com";
+//        String password = "123";
+        String userName = FrmMain.username;
+        String password = FrmMain.password;
+
+        System.out.println("Downloading emails from " + userName + "...");
 
         EmailReceiver receiver = new EmailReceiver();
         receiver.downloadEmails(protocol, host, port, userName, password);

@@ -4,6 +4,7 @@ public class FrmDashboard extends JFrame {
     private JButton btnInbox;
     private JPanel panel1;
     private JButton btnComposeMail;
+    private JButton btnLogin;
 
     public FrmDashboard() {
         setContentPane(panel1);
@@ -18,6 +19,11 @@ public class FrmDashboard extends JFrame {
 
         btnComposeMail.addActionListener(e -> {
             new FrmComposeMail().setVisible(true);
+            setVisible(false);
+        });
+
+        btnLogin.addActionListener(e -> {
+            new FrmMain().setVisible(true);
             setVisible(false);
         });
     }

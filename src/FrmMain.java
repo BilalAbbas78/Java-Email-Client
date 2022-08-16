@@ -15,11 +15,13 @@ public class FrmMain extends JFrame {
     private JLabel lblPassword;
     private JLabel lblUsername;
 
+    public static String username, password;
+
     public static boolean isValid = false;
 
     public static void main(String[] args) {
         FrmMain dialog = new FrmMain();
-        dialog.pack();
+//        dialog.pack();
         dialog.setVisible(true);
     }
 
@@ -41,12 +43,17 @@ public class FrmMain extends JFrame {
         });
 
         contentPane.registerKeyboardAction(e -> onExit(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        setSize(230, 200);
+        setTitle("Login");
     }
 
     private void onLogin() {
+        username = txtUsername.getText();
+        password = txtPassword.getText();
         EmailReceiver.downloadEmails("imap", "localhost", "143", txtUsername.getText(), txtPassword.getText());
         if (isValid) {
-            new FrmInbox().setVisible(true);
+            new FrmDashboard().setVisible(true);
             setVisible(false);
         }
     }
