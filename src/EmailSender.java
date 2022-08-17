@@ -45,13 +45,16 @@ public class EmailSender {
                 Message.RecipientType.TO, InternetAddress.parse(receiver));
         message.setSubject(subject);
 
-        // Create the message part
-        BodyPart messageBodyPart = new MimeBodyPart();
 
-        // Now set the actual message
-        messageBodyPart.setText(msg);
 
         if (!FrmComposeMail.filePath.equals("")){
+
+            // Create the message part
+            BodyPart messageBodyPart = new MimeBodyPart();
+
+            // Now set the actual message
+            messageBodyPart.setText(msg);
+
             // Create a multipar message
             Multipart multipart = new MimeMultipart();
 
@@ -68,6 +71,11 @@ public class EmailSender {
 
             // Send the complete message parts
             message.setContent(multipart);
+            FrmComposeMail.filePath = "";
+            FrmComposeMail.fileName = "";
+        }
+        else {
+            message.setText(msg);
         }
 
 

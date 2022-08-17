@@ -48,6 +48,7 @@ public class FrmComposeMail extends JFrame {
                     setVisible(false);
                 } catch (MessagingException ex) {
                     JOptionPane.showMessageDialog(null, "Message can't send");
+                    ex.printStackTrace();
                 }
                 txtTo.setText("");
                 txtMessage.setText("");

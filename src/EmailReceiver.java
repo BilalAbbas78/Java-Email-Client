@@ -122,8 +122,7 @@ public class EmailReceiver {
                     if (attachFiles.length() > 1) {
                         attachFiles = attachFiles.substring(0, attachFiles.length() - 2);
                     }
-                } else if (contentType.contains("text/plain")
-                        || contentType.contains("text/html")) {
+                } else {
                     Object content = message.getContent();
                     if (content != null) {
                         messageContent = content.toString();
