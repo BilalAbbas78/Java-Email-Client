@@ -9,7 +9,7 @@ public class FrmComposeMail extends JFrame {
     private JLabel lblMessage;
     private JTextArea txtMessage;
     private JButton btnSend;
-    private JButton btnBack;
+    private JButton btnExit;
     private JTextField txtSubject;
     private JLabel lblSubject;
     private JButton btnSelectAttachment;
@@ -45,6 +45,7 @@ public class FrmComposeMail extends JFrame {
             } else {
                 try {
                     new EmailSender();
+                    setVisible(false);
                 } catch (MessagingException ex) {
                     JOptionPane.showMessageDialog(null, "Message can't send");
                 }
@@ -55,8 +56,7 @@ public class FrmComposeMail extends JFrame {
 //            EmailSender.sendMessage(FrmMain.username, to, message);
         });
 
-        btnBack.addActionListener(e -> {
-            new FrmDashboard().setVisible(true);
+        btnExit.addActionListener(e -> {
             setVisible(false);
         });
     }

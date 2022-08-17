@@ -45,6 +45,7 @@ public class FrmMain extends JFrame {
         contentPane.registerKeyboardAction(e -> onExit(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         setSize(230, 200);
+        setLocationRelativeTo(null);
         setTitle("Login");
     }
 
@@ -53,7 +54,7 @@ public class FrmMain extends JFrame {
         password = txtPassword.getText();
         EmailReceiver.downloadEmails("imap", "localhost", "143", txtUsername.getText(), txtPassword.getText());
         if (isValid) {
-            new FrmDashboard().setVisible(true);
+            new FrmInbox().setVisible(true);
             setVisible(false);
         }
     }
