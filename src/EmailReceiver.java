@@ -1,22 +1,26 @@
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
-import javax.mail.Address;
-import javax.mail.Folder;
-import javax.mail.Message;
+import javax.mail.*;
 import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Store;
+import javax.mail.internet.MimeBodyPart;
 import javax.swing.*;
 
 class MyInbox {
-    String from, to, subject, message;
-    MyInbox(String from, String to, String subject, String message) {
+    String from, date, subject, message, attachment;
+    Message message1;
+    MimeBodyPart part;
+    MyInbox(String from, String date, String subject, String message, String attachment, MimeBodyPart part, Message message1) {
         this.from = from;
-        this.to = to;
+        this.date = date;
         this.subject = subject;
         this.message = message;
+        this.attachment = attachment;
+        this.part = part;
+        this.message1 = message1;
     }
 }
 
@@ -24,6 +28,8 @@ class MyInbox {
 public class EmailReceiver {
 
     public static ArrayList<MyInbox> inbox = new ArrayList<>();
+    public static Folder folderInbox;
+    public static Store store;
 
     private static Properties getServerProperties(String protocol, String host,
                                                   String port) {
@@ -56,43 +62,118 @@ public class EmailReceiver {
 
         try {
             // connects to the message store
-            Store store = session.getStore(protocol);
+            store = session.getStore(protocol);
             store.connect(userName, password);
 
             FrmMain.isValid = true;
 
             // opens the inbox folder
-            Folder folderInbox = store.getFolder("INBOX");
-            folderInbox.open(Folder.READ_ONLY);
+            folderInbox = store.getFolder("INBOX");
+//            folderInbox.open(Folder.READ_ONLY);
+            folderInbox.open(Folder.READ_WRITE);
+            folderInbox.expunge();
 
             // fetches new messages from server
             Message[] messages = folderInbox.getMessages();
             inbox.clear();
-            for (Message msg : messages) {
-                Address[] fromAddress = msg.getFrom();
-                String from = fromAddress[0].toString();
-                String subject = msg.getSubject();
-                String toList = parseAddresses(msg
-                        .getRecipients(RecipientType.TO));
-                String ccList = parseAddresses(msg
-                        .getRecipients(RecipientType.CC));
-                String sentDate = msg.getSentDate().toString();
 
-                String contentType = msg.getContentType();
+            for (int i = 0; i < messages.length; i++) {
+                String attachment = "No";
+                Message message = messages[i];
+                Address[] fromAddress = message.getFrom();
+                String from = fromAddress[0].toString();
+                String subject = message.getSubject();
+                String sentDate = message.getSentDate().toString();
+
+                String contentType = message.getContentType();
                 String messageContent = "";
 
-//                if (contentType.contains("text/plain")
-//                        || contentType.contains("text/html")) {
-                try {
-                    Object content = msg.getContent();
+                // store attachment file name, separated by comma
+                String attachFiles = "";
+
+                MimeBodyPart part = null;
+                if (contentType.contains("multipart")) {
+                    attachment = "Yes";
+                    // content may contain attachments
+                    Multipart multiPart = (Multipart) message.getContent();
+                    int numberOfParts = multiPart.getCount();
+                    for (int partCount = 0; partCount < numberOfParts; partCount++) {
+                        part = (MimeBodyPart) multiPart.getBodyPart(partCount);
+                        if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                            // this part is attachment
+                            String fileName = part.getFileName();
+
+
+
+                            attachFiles += fileName + ", ";
+
+//                            part.saveFile("D:/Attachments" + File.separator + part.getFileName());
+
+
+//                            part.saveFile("D:/" + File.separator + fileName);
+//                            part.saveFile("D:/Attachments/" + part.getFileName().replaceFirst("D:/", ""));
+
+                        } else {
+                            // this part may be the message content
+                            messageContent = part.getContent().toString();
+                        }
+                    }
+
+                    if (attachFiles.length() > 1) {
+                        attachFiles = attachFiles.substring(0, attachFiles.length() - 2);
+                    }
+                } else if (contentType.contains("text/plain")
+                        || contentType.contains("text/html")) {
+                    Object content = message.getContent();
                     if (content != null) {
                         messageContent = content.toString();
-                        inbox.add(new MyInbox(from, toList, subject, messageContent));
                     }
-                } catch (Exception ex) {
-                    messageContent = "[Error downloading content]";
-                    ex.printStackTrace();
                 }
+
+
+
+                inbox.add(new MyInbox(from, sentDate, subject, messageContent, attachment, part, message));
+
+
+
+//            for (Message msg : messages) {
+//                Address[] fromAddress = msg.getFrom();
+//                String from = fromAddress[0].toString();
+//                String subject = msg.getSubject();
+//                String toList = parseAddresses(msg
+//                        .getRecipients(RecipientType.TO));
+//                String ccList = parseAddresses(msg
+//                        .getRecipients(RecipientType.CC));
+//                String sentDate = msg.getSentDate().toString();
+//
+//                String contentType = msg.getContentType();
+//                String messageContent = "";
+//
+////                if (contentType.contains("text/plain")
+////                        || contentType.contains("text/html")) {
+//                try {
+//                    Object content = msg.getContent();
+//                    if (content != null) {
+//                        messageContent = content.toString();
+//                        inbox.add(new MyInbox(from, sentDate, subject, messageContent));
+//                    }
+//                } catch (Exception ex) {
+//                    messageContent = "[Error downloading content]";
+//                    ex.printStackTrace();
+//                }
+////
+//
+//
+//                if (contentType.contains("multipart")) {
+//                    // this message may contain attachment
+//                    Multipart multiPart = (Multipart) msg.getContent();
+//
+//                    for (int i = 0; i < multiPart.getCount(); i++) {
+//                        MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
+//                        if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+//                            part.saveFile("D:/Attachments/" + part.getFileName().replaceFirst("D:/", ""));
+//                        }
+//                    }
 //                }
 
 
@@ -107,8 +188,8 @@ public class EmailReceiver {
             }
 
             // disconnect
-            folderInbox.close(false);
-            store.close();
+//            folderInbox.close(false);
+//            store.close();
         } catch (NoSuchProviderException ex) {
             System.out.println("No provider for protocol: " + protocol);
             ex.printStackTrace();
@@ -117,6 +198,9 @@ public class EmailReceiver {
             JOptionPane.showMessageDialog(null, "Enter valid username and password", "Invalid Credentials", JOptionPane.ERROR_MESSAGE);
 //            System.out.println("Could not connect to the message store");
 //            ex.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

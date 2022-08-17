@@ -1,6 +1,10 @@
 import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.swing.*;
 
 public class EmailSender {
     static Properties prop = new Properties();
@@ -41,9 +45,37 @@ public class EmailSender {
                 Message.RecipientType.TO, InternetAddress.parse(receiver));
         message.setSubject(subject);
 
+        // Create the message part
+        BodyPart messageBodyPart = new MimeBodyPart();
+
+        // Now set the actual message
+        messageBodyPart.setText(msg);
+
+        if (!FrmComposeMail.filePath.equals("")){
+            // Create a multipar message
+            Multipart multipart = new MimeMultipart();
+
+            // Set text message part
+            multipart.addBodyPart(messageBodyPart);
+
+            // Part two is attachment
+            messageBodyPart = new MimeBodyPart();
+            String filePath = FrmComposeMail.filePath;
+            DataSource source = new FileDataSource(filePath);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(FrmComposeMail.fileName);
+            multipart.addBodyPart(messageBodyPart);
+
+            // Send the complete message parts
+            message.setContent(multipart);
+        }
+
+
+
+
 //        String msg = "This is my fourth email using JavaMailer";
 
-        message.setText(msg);
+//        message.setText(msg);
 
 //        MimeBodyPart mimeBodyPart = new MimeBodyPart();
 //        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
@@ -52,7 +84,9 @@ public class EmailSender {
 //        multipart.addBodyPart(mimeBodyPart);
 //
 //        message.setContent(multipart);
-
+//
         Transport.send(message);
+        JOptionPane.showMessageDialog(null, "Message sent successfully");
+
     }
 }

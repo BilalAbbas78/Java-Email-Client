@@ -1,5 +1,6 @@
 import javax.mail.MessagingException;
 import javax.swing.*;
+import java.io.File;
 
 public class FrmComposeMail extends JFrame {
     private JPanel myPanel;
@@ -11,8 +12,11 @@ public class FrmComposeMail extends JFrame {
     private JButton btnBack;
     private JTextField txtSubject;
     private JLabel lblSubject;
+    private JButton btnSelectAttachment;
 
     public static String to, subject, message;
+    public static String filePath = "";
+    public static String fileName = "";
 
     FrmComposeMail() {
         setTitle("Compose Mail");
@@ -20,6 +24,16 @@ public class FrmComposeMail extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setContentPane(myPanel);
+
+        btnSelectAttachment.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.showOpenDialog(null);
+            File file = fileChooser.getSelectedFile();
+            filePath = file.getAbsolutePath();
+            fileName = file.getName();
+//            filepath = file.
+//            txtMessage.append("\nAttachment: " + file.getName());
+        });
 
         btnSend.addActionListener(e -> {
             to = txtTo.getText();
@@ -34,7 +48,6 @@ public class FrmComposeMail extends JFrame {
                 } catch (MessagingException ex) {
                     JOptionPane.showMessageDialog(null, "Message can't send");
                 }
-                JOptionPane.showMessageDialog(null, "Message sent successfully");
                 txtTo.setText("");
                 txtMessage.setText("");
                 txtSubject.setText("");
