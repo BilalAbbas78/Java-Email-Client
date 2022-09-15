@@ -46,7 +46,8 @@ public class FrmComposeMail extends JFrame {
                 try {
                     new EmailSender();
                     setVisible(false);
-                } catch (MessagingException ex) {
+                }
+                catch (MessagingException ex) {
                     JOptionPane.showMessageDialog(null, "Message can't send");
                     ex.printStackTrace();
                 }
